@@ -27,6 +27,7 @@ import com.panic08.funpay4j.commands.offer.CreateOfferImage;
 import com.panic08.funpay4j.commands.offer.DeleteOffer;
 import com.panic08.funpay4j.commands.offer.EditOffer;
 import com.panic08.funpay4j.commands.offer.RaiseAllOffers;
+import com.panic08.funpay4j.commands.order.GetOrder;
 import com.panic08.funpay4j.commands.transaction.GetTransactions;
 import com.panic08.funpay4j.commands.user.GetSellerReviews;
 import com.panic08.funpay4j.commands.user.GetUser;
@@ -35,8 +36,11 @@ import com.panic08.funpay4j.exceptions.FunPayApiException;
 import com.panic08.funpay4j.exceptions.InvalidCsrfTokenOrPHPSESSIDException;
 import com.panic08.funpay4j.exceptions.InvalidGoldenKeyException;
 import com.panic08.funpay4j.exceptions.offer.OfferAlreadyRaisedException;
+import com.panic08.funpay4j.exceptions.order.OrderNotFoundException;
 import com.panic08.funpay4j.exceptions.user.UserNotFoundException;
 import com.panic08.funpay4j.objects.CsrfTokenAndPHPSESSID;
+import com.panic08.funpay4j.objects.order.Order;
+import com.panic08.funpay4j.objects.order.ParsedOrder;
 import com.panic08.funpay4j.objects.transaction.ParsedTransaction;
 import com.panic08.funpay4j.objects.transaction.ParsedTransactionType;
 import com.panic08.funpay4j.objects.transaction.Transaction;
@@ -349,6 +353,27 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
                                     .build();
                         })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Execute to get order authorized
+     *
+     * @param command command that will be executed
+     * @return order
+     * @throws FunPayApiException if the other api-related exception
+     * @throws OrderNotFoundException if the order with id does not found
+     */
+    public Order execute(GetOrder command) throws FunPayApiException, OrderNotFoundException {
+        ParsedOrder parsedOrder = funPayParser.parseOrder(goldenKey, command.getOrderId());
+        return Order.builder()
+                .id(parsedOrder.getId())
+                .statuses(parsedOrder.getStatuses())
+                .shortDescription(parsedOrder.getShortDescription())
+                .detailedDescription(parsedOrder.getDetailedDescription())
+                .price(parsedOrder.getPrice())
+                .params(parsedOrder.getParams())
+                .other(parsedOrder.getOther())
+                .build();
     }
 
     /**

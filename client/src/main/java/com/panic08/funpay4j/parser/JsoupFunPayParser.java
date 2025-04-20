@@ -40,6 +40,7 @@ import com.panic08.funpay4j.exceptions.FunPayApiException;
 import com.panic08.funpay4j.exceptions.InvalidGoldenKeyException;
 import com.panic08.funpay4j.exceptions.lot.LotNotFoundException;
 import com.panic08.funpay4j.exceptions.offer.OfferNotFoundException;
+import com.panic08.funpay4j.exceptions.order.OrderNotFoundException;
 import com.panic08.funpay4j.exceptions.user.UserNotFoundException;
 import com.panic08.funpay4j.objects.CsrfTokenAndPHPSESSID;
 import com.panic08.funpay4j.objects.game.ParsedPromoGame;
@@ -48,14 +49,11 @@ import com.panic08.funpay4j.objects.lot.ParsedLot;
 import com.panic08.funpay4j.objects.lot.ParsedLotCounter;
 import com.panic08.funpay4j.objects.offer.ParsedOffer;
 import com.panic08.funpay4j.objects.offer.ParsedPreviewOffer;
+import com.panic08.funpay4j.objects.order.ParsedOrder;
 import com.panic08.funpay4j.objects.transaction.ParsedTransaction;
 import com.panic08.funpay4j.objects.transaction.ParsedTransactionStatus;
 import com.panic08.funpay4j.objects.transaction.ParsedTransactionType;
-import com.panic08.funpay4j.objects.user.ParsedAdvancedSellerReview;
-import com.panic08.funpay4j.objects.user.ParsedPreviewSeller;
-import com.panic08.funpay4j.objects.user.ParsedSeller;
-import com.panic08.funpay4j.objects.user.ParsedSellerReview;
-import com.panic08.funpay4j.objects.user.ParsedUser;
+import com.panic08.funpay4j.objects.user.*;
 
 /**
  * This implementation of FunPayParser uses Jsoup to parse
@@ -389,34 +387,14 @@ public class JsoupFunPayParser implements FunPayParser {
                 parameters.put(key, value);
             }
 
-            Element previewSellerUsernameElement =
-                    funPayDocument.getElementsByClass("media-user-name").first().selectFirst("a");
-            Element previewSellerImgElement =
-                    funPayDocument.getElementsByClass("media-user").first().selectFirst("img");
             Element previewSellerReviewCountElement =
                     funPayDocument.getElementsByClass("text-mini text-light mb5").first();
-
-            String previewSellerUsernameElementHrefAttributeValue =
-                    previewSellerUsernameElement.attr("href");
-
-            long previewSellerUserId =
-                    Long.parseLong(
-                            previewSellerUsernameElementHrefAttributeValue.substring(
-                                    25,
-                                    previewSellerUsernameElementHrefAttributeValue.length() - 1));
-            String previewSellerUsername = previewSellerUsernameElement.text();
-            String previewSellerAvatarPhotoLink = previewSellerImgElement.attr("src");
-
-            // if the previewUser has a regular photo
-            if (previewSellerAvatarPhotoLink.equals("/img/layout/avatar.png"))
-                previewSellerAvatarPhotoLink = null;
 
             // Select rating from string like "219 reviews over 2 years"
             int previewSellerReviewCount =
                     Integer.parseInt(
                             previewSellerReviewCountElement.text().replaceAll("\\D.*", ""));
-            boolean isPreviewSellerOnline =
-                    funPayDocument.getElementsByClass("media media-user online").first() != null;
+            ParsedPreviewUser parsedPreviewUser = extractPreviewUserFromProductPage(funPayDocument);
 
             return ParsedOffer.builder()
                     .id(offerId)
@@ -428,11 +406,11 @@ public class JsoupFunPayParser implements FunPayParser {
                     .parameters(parameters)
                     .seller(
                             ParsedPreviewSeller.builder()
-                                    .userId(previewSellerUserId)
-                                    .username(previewSellerUsername)
-                                    .avatarPhotoLink(previewSellerAvatarPhotoLink)
+                                    .userId(parsedPreviewUser.getUserId())
+                                    .avatarPhotoLink(parsedPreviewUser.getAvatarPhotoLink())
+                                    .username(parsedPreviewUser.getUsername())
+                                    .isOnline(parsedPreviewUser.isOnline())
                                     .reviewCount(previewSellerReviewCount)
-                                    .isOnline(isPreviewSellerOnline)
                                     .build())
                     .build();
         } catch (IOException e) {
@@ -495,6 +473,86 @@ public class JsoupFunPayParser implements FunPayParser {
     public List<ParsedTransaction> parseTransactions(String goldenKey, long userId, int pages)
             throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException {
         return parseTransactionsInternal(goldenKey, userId, null, pages);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ParsedOrder parseOrder(String goldenKey, String orderId)
+            throws FunPayApiException, OrderNotFoundException {
+        try (Response funPayHtmlResponse =
+                httpClient
+                        .newCall(
+                                new Request.Builder()
+                                        .get()
+                                        .addHeader("Cookie", "golden_key=" + goldenKey)
+                                        .url(baseURL + "/orders/" + orderId + "/")
+                                        .build())
+                        .execute()) {
+            String funPayHtmlPageBody = funPayHtmlResponse.body().string();
+
+            Document funPayDocument = Jsoup.parse(funPayHtmlPageBody);
+
+            if (isNonExistentFunPayPage(funPayDocument)) {
+                throw new OrderNotFoundException(
+                        "Order with orderId " + orderId + " does not found");
+            }
+
+            List<String> statuses = new ArrayList<>();
+
+            List<Element> pageContentChildren =
+                    funPayDocument.getElementsByClass("page-content").first().children();
+
+            Element pageHeader = pageContentChildren.get(0);
+            for (Element statusElement : pageHeader.children()) {
+                statuses.add(statusElement.text());
+            }
+
+            Element paramList = pageContentChildren.get(1);
+
+            Map<String, String> params = new HashMap<>();
+
+            for (Element col : paramList.getElementsByClass("row").first().children()) {
+                List<Element> paramItemChildren =
+                        col.getElementsByClass("param-item").first().children();
+                params.put(paramItemChildren.get(0).text(), paramItemChildren.get(1).text());
+            }
+
+            List<Element> paramRows = paramList.getElementsByClass("row");
+
+            Double price = null;
+
+            for (Element paramRow : paramRows) {
+                for (Element paramCol : paramRow.children()) {
+                    List<Element> paramItemChildren =
+                            paramCol.getElementsByClass("param-item").first().children();
+                    if (paramItemChildren.get(0).text().equals("Сумма")) {
+                        price =
+                                Double.parseDouble(
+                                        paramItemChildren.get(1).children().get(0).text());
+                    } else {
+                        params.put(
+                                paramItemChildren.get(0).text(), paramItemChildren.get(1).text());
+                    }
+                }
+            }
+
+            List<Element> paramListChildren = paramList.children();
+
+            String shortDescription = paramListChildren.get(1).children().get(1).text();
+            String detailedDescription = paramListChildren.get(2).children().get(1).text();
+
+            return ParsedOrder.builder()
+                    .id(orderId)
+                    .statuses(statuses)
+                    .params(params)
+                    .shortDescription(shortDescription)
+                    .detailedDescription(detailedDescription)
+                    .price(price)
+                    .other(extractPreviewUserFromProductPage(funPayDocument))
+                    .build();
+        } catch (IOException e) {
+            throw new FunPayApiException(e.getLocalizedMessage());
+        }
     }
 
     /** {@inheritDoc} */
@@ -921,6 +979,38 @@ public class JsoupFunPayParser implements FunPayParser {
         }
 
         return currentSellerReviews;
+    }
+
+    private ParsedPreviewUser extractPreviewUserFromProductPage(Document funPayDocument) {
+        System.out.println();
+        Element previewSellerUsernameElement =
+                funPayDocument.getElementsByClass("media-user-name").first().selectFirst("a");
+        Element previewSellerImgElement =
+                funPayDocument.getElementsByClass("media-user").first().selectFirst("img");
+        Element previewSellerReviewCountElement =
+                funPayDocument.getElementsByClass("text-mini text-light mb5").first();
+
+        String previewSellerUsernameElementHrefAttributeValue =
+                previewSellerUsernameElement.attr("href");
+
+        long previewSellerUserId =
+                Long.parseLong(
+                        previewSellerUsernameElementHrefAttributeValue.substring(
+                                25, previewSellerUsernameElementHrefAttributeValue.length() - 1));
+        String previewSellerUsername = previewSellerUsernameElement.text();
+        String previewSellerAvatarPhotoLink = previewSellerImgElement.attr("src");
+
+        // if the previewUser has a regular photo
+        if (previewSellerAvatarPhotoLink.equals("/img/layout/avatar.png"))
+            previewSellerAvatarPhotoLink = null;
+        boolean isPreviewSellerOnline =
+                funPayDocument.getElementsByClass("media media-user online").first() != null;
+        return ParsedPreviewUser.builder()
+                .userId(previewSellerUserId)
+                .username(previewSellerUsername)
+                .avatarPhotoLink(previewSellerAvatarPhotoLink)
+                .isOnline(isPreviewSellerOnline)
+                .build();
     }
 
     private void extractReviewsFromReviewsHtml(
