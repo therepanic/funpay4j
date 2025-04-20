@@ -982,13 +982,10 @@ public class JsoupFunPayParser implements FunPayParser {
     }
 
     private ParsedPreviewUser extractPreviewUserFromProductPage(Document funPayDocument) {
-        System.out.println();
         Element previewSellerUsernameElement =
                 funPayDocument.getElementsByClass("media-user-name").first().selectFirst("a");
         Element previewSellerImgElement =
                 funPayDocument.getElementsByClass("media-user").first().selectFirst("img");
-        Element previewSellerReviewCountElement =
-                funPayDocument.getElementsByClass("text-mini text-light mb5").first();
 
         String previewSellerUsernameElementHrefAttributeValue =
                 previewSellerUsernameElement.attr("href");
