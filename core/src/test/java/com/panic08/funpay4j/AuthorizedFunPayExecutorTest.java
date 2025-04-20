@@ -37,10 +37,12 @@ import com.panic08.funpay4j.commands.offer.CreateOfferImage;
 import com.panic08.funpay4j.commands.offer.DeleteOffer;
 import com.panic08.funpay4j.commands.offer.EditOffer;
 import com.panic08.funpay4j.commands.offer.RaiseAllOffers;
+import com.panic08.funpay4j.commands.order.GetOrder;
 import com.panic08.funpay4j.commands.transaction.GetTransactions;
 import com.panic08.funpay4j.commands.user.UpdateAvatar;
 import com.panic08.funpay4j.exceptions.InvalidGoldenKeyException;
 import com.panic08.funpay4j.exceptions.offer.OfferAlreadyRaisedException;
+import com.panic08.funpay4j.objects.order.Order;
 import com.panic08.funpay4j.objects.transaction.Transaction;
 
 /**
@@ -56,6 +58,8 @@ class AuthorizedFunPayExecutorTest {
             "src/test/resources/html/client/getCsrfTokenAndPHPSESSIDResponse.html";
     private static final String GET_TRANSACTIONS_HTML_RESPONSE_PATH =
             "src/test/resources/html/client/getTransactionsResponse.html";
+    private static final String GET_SALE_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getSaleResponse.html";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -288,5 +292,30 @@ class AuthorizedFunPayExecutorTest {
         assertNotNull(firstTransaction.getStatus());
         assertNotNull(firstTransaction.getDate());
         assertFalse(firstTransaction.getTitle().isEmpty());
+    }
+
+    @Test
+    void testGetOrder() throws Exception {
+        String orderId = "GFHMZY4Z";
+
+        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_SALE_HTML_RESPONSE_PATH)));
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(htmlContent)
+                        .setHeader("Content-Type", "application/json"));
+
+        Order order = funPayExecutor.execute(GetOrder.builder().orderId(orderId).build());
+
+        assertNotNull(order);
+        assertEquals(orderId, order.getId());
+        assertNotNull(order.getStatuses());
+        assertFalse(order.getStatuses().isEmpty());
+        assertNotNull(order.getShortDescription());
+        assertNotNull(order.getDetailedDescription());
+        assertEquals(90.0, order.getPrice());
+        assertNotNull(order.getParams());
+        assertNotNull(order.getOther());
     }
 }

@@ -20,11 +20,13 @@ import com.panic08.funpay4j.exceptions.FunPayApiException;
 import com.panic08.funpay4j.exceptions.InvalidGoldenKeyException;
 import com.panic08.funpay4j.exceptions.lot.LotNotFoundException;
 import com.panic08.funpay4j.exceptions.offer.OfferNotFoundException;
+import com.panic08.funpay4j.exceptions.order.OrderNotFoundException;
 import com.panic08.funpay4j.exceptions.user.UserNotFoundException;
 import com.panic08.funpay4j.objects.CsrfTokenAndPHPSESSID;
 import com.panic08.funpay4j.objects.game.ParsedPromoGame;
 import com.panic08.funpay4j.objects.lot.ParsedLot;
 import com.panic08.funpay4j.objects.offer.ParsedOffer;
+import com.panic08.funpay4j.objects.order.ParsedOrder;
 import com.panic08.funpay4j.objects.transaction.ParsedTransaction;
 import com.panic08.funpay4j.objects.transaction.ParsedTransactionType;
 import com.panic08.funpay4j.objects.user.ParsedSellerReview;
@@ -172,6 +174,19 @@ public interface FunPayParser {
      */
     List<ParsedTransaction> parseTransactions(String goldenKey, long userId, int pages)
             throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException;
+
+    /**
+     * Parse order authorized
+     *
+     * @param goldenKey golden key which will be used to authorize the user
+     * @param orderId order id by which sale will be parsed
+     * @return sale
+     * @throws FunPayApiException if the other api-related exception
+     * @throws OrderNotFoundException if the order with id does not found
+     * @throws InvalidGoldenKeyException if the golden key is incorrect
+     */
+    ParsedOrder parseOrder(String goldenKey, String orderId)
+            throws FunPayApiException, OrderNotFoundException, InvalidGoldenKeyException;
 
     /**
      * Parse csrf-token and PHPSESSID

@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 import com.panic08.funpay4j.exceptions.lot.LotNotFoundException;
 import com.panic08.funpay4j.exceptions.offer.OfferNotFoundException;
+import com.panic08.funpay4j.exceptions.order.OrderNotFoundException;
 import com.panic08.funpay4j.exceptions.user.UserNotFoundException;
 import com.panic08.funpay4j.objects.CsrfTokenAndPHPSESSID;
 import com.panic08.funpay4j.objects.game.ParsedPromoGame;
@@ -45,6 +46,7 @@ import com.panic08.funpay4j.objects.lot.ParsedLot;
 import com.panic08.funpay4j.objects.lot.ParsedLotCounter;
 import com.panic08.funpay4j.objects.offer.ParsedOffer;
 import com.panic08.funpay4j.objects.offer.ParsedPreviewOffer;
+import com.panic08.funpay4j.objects.order.ParsedOrder;
 import com.panic08.funpay4j.objects.transaction.ParsedTransaction;
 import com.panic08.funpay4j.objects.user.ParsedAdvancedSellerReview;
 import com.panic08.funpay4j.objects.user.ParsedPreviewSeller;
@@ -73,6 +75,8 @@ class JsoupFunPayParserTest {
             "src/test/resources/html/client/getSellerReviewsResponse.html";
     private static final String GET_TRANSACTIONS_HTML_RESPONSE_PATH =
             "src/test/resources/html/client/getTransactionsResponse.html";
+    private static final String GET_ORDER_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getOrderResponse.html";
     private static final String BASE_URL = "/";
 
     @BeforeEach
@@ -330,6 +334,49 @@ class JsoupFunPayParserTest {
         assertThrows(
                 UserNotFoundException.class,
                 () -> parser.parseTransactions(goldenKey, userId, pages));
+    }
+
+    @Test
+    void testParseOrder() throws Exception {
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(GET_ORDER_HTML_RESPONSE_PATH)));
+        mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
+
+        String goldenKey = "some_golden_key";
+        String orderId = "GFHMZY4Z";
+
+        ParsedOrder order = parser.parseOrder(goldenKey, orderId);
+
+        assertNotNull(order);
+        assertNotNull(order.getStatuses());
+        assertFalse(order.getStatuses().isEmpty());
+        assertEquals(orderId, order.getId());
+        assertNotNull(order.getShortDescription());
+        assertNotNull(order.getDetailedDescription());
+        assertTrue(order.getPrice() > 0);
+
+        assertNotNull(order.getParams());
+        assertFalse(order.getParams().isEmpty());
+        for (Map.Entry<String, String> entry : order.getParams().entrySet()) {
+            assertNotNull(entry.getKey());
+            assertFalse(entry.getKey().isEmpty());
+            assertNotNull(entry.getValue());
+        }
+        assertNotNull(order.getOther());
+        assertTrue(order.getOther().getUserId() > 0);
+        assertNotNull(order.getOther().getUsername());
+    }
+
+    @Test
+    void testParseOrderNotFound() throws Exception {
+        String notFoundHtml =
+                "<div class=\"page-content-full\"><div class=\"page-header\"></div></div>";
+        mockWebServer.enqueue(new MockResponse().setBody(notFoundHtml).setResponseCode(400));
+
+        String goldenKey = "some_golden_key";
+        String orderId = "999999";
+
+        assertThrows(OrderNotFoundException.class, () -> parser.parseOrder(goldenKey, orderId));
     }
 
     @Test
