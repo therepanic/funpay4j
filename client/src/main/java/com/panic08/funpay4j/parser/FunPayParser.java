@@ -179,14 +179,13 @@ public interface FunPayParser {
      * Parse order authorized
      *
      * @param goldenKey golden key which will be used to authorize the user
-     * @param orderId order id by which sale will be parsed
-     * @return sale
+     * @param orderId order id by which order will be parsed
+     * @return order
      * @throws FunPayApiException if the other api-related exception
      * @throws OrderNotFoundException if the order with id does not found
-     * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     ParsedOrder parseOrder(String goldenKey, String orderId)
-            throws FunPayApiException, OrderNotFoundException, InvalidGoldenKeyException;
+            throws FunPayApiException, OrderNotFoundException;
 
     /**
      * Parse csrf-token and PHPSESSID

@@ -24,7 +24,7 @@ import lombok.Data;
 import com.panic08.funpay4j.objects.user.ParsedPreviewUser;
 
 /**
- * This object represents the FunPay sale
+ * This object represents the FunPay order
  *
  * @author panic08
  * @since 1.0.7

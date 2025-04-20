@@ -58,8 +58,8 @@ class AuthorizedFunPayExecutorTest {
             "src/test/resources/html/client/getCsrfTokenAndPHPSESSIDResponse.html";
     private static final String GET_TRANSACTIONS_HTML_RESPONSE_PATH =
             "src/test/resources/html/client/getTransactionsResponse.html";
-    private static final String GET_SALE_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getSaleResponse.html";
+    private static final String GET_ORDER_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/getOrderResponse.html";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -298,7 +298,8 @@ class AuthorizedFunPayExecutorTest {
     void testGetOrder() throws Exception {
         String orderId = "GFHMZY4Z";
 
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_SALE_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(GET_ORDER_HTML_RESPONSE_PATH)));
 
         mockWebServer.enqueue(
                 new MockResponse()

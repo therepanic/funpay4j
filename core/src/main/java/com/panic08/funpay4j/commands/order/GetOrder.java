@@ -14,7 +14,11 @@
 
 package com.panic08.funpay4j.commands.order;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Use this command to get order

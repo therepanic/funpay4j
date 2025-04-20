@@ -362,10 +362,8 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @return order
      * @throws FunPayApiException if the other api-related exception
      * @throws OrderNotFoundException if the order with id does not found
-     * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
-    public Order execute(GetOrder command)
-            throws FunPayApiException, OrderNotFoundException, InvalidGoldenKeyException {
+    public Order execute(GetOrder command) throws FunPayApiException, OrderNotFoundException {
         ParsedOrder parsedOrder = funPayParser.parseOrder(goldenKey, command.getOrderId());
         return Order.builder()
                 .id(parsedOrder.getId())

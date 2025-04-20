@@ -478,7 +478,7 @@ public class JsoupFunPayParser implements FunPayParser {
     /** {@inheritDoc} */
     @Override
     public ParsedOrder parseOrder(String goldenKey, String orderId)
-            throws FunPayApiException, OrderNotFoundException, InvalidGoldenKeyException {
+            throws FunPayApiException, OrderNotFoundException {
         try (Response funPayHtmlResponse =
                 httpClient
                         .newCall(
