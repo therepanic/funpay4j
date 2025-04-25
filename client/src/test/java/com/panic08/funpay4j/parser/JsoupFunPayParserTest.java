@@ -63,20 +63,20 @@ class JsoupFunPayParserTest {
     private MockWebServer mockWebServer;
     private JsoupFunPayParser parser;
 
-    private static final String GET_LOT_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getLotResponse.html";
-    private static final String GET_PROMO_GAMES_JSON_RESPONSE_PATH =
-            "src/test/resources/json/client/getPromoGamesResponse.json";
-    private static final String GET_OFFER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getOfferResponse.html";
-    private static final String GET_USER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getUserResponse.html";
-    private static final String GET_SELLER_REVIEWS_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getSellerReviewsResponse.html";
-    private static final String GET_TRANSACTIONS_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getTransactionsResponse.html";
-    private static final String GET_ORDER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getOrderResponse.html";
+    private static final String PARSE_LOT_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/parseLotResponse.html";
+    private static final String PARSE_PROMO_GAMES_JSON_RESPONSE_PATH =
+            "src/test/resources/json/client/parsePromoGamesResponse.json";
+    private static final String PARSE_OFFER_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/parseOfferResponse.html";
+    private static final String PARSE_USER_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/parseUserResponse.html";
+    private static final String PARSE_SELLER_REVIEWS_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/parseSellerReviewsResponse.html";
+    private static final String PARSE_TRANSACTIONS_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/parseTransactionsResponse.html";
+    private static final String PARSE_ORDER_HTML_RESPONSE_PATH =
+            "src/test/resources/html/client/parseOrderResponse.html";
     private static final String BASE_URL = "/";
 
     @BeforeEach
@@ -95,7 +95,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseLot() throws Exception {
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_LOT_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(PARSE_LOT_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long lotId = 149L;
@@ -136,7 +137,7 @@ class JsoupFunPayParserTest {
     @Test
     void testParsePromoGames() throws Exception {
         String jsonContent =
-                new String(Files.readAllBytes(Paths.get(GET_PROMO_GAMES_JSON_RESPONSE_PATH)));
+                new String(Files.readAllBytes(Paths.get(PARSE_PROMO_GAMES_JSON_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(jsonContent).setResponseCode(200));
 
         String query = "dota";
@@ -158,7 +159,7 @@ class JsoupFunPayParserTest {
     @Test
     void testParseOffer() throws Exception {
         String htmlContent =
-                new String(Files.readAllBytes(Paths.get(GET_OFFER_HTML_RESPONSE_PATH)));
+                new String(Files.readAllBytes(Paths.get(PARSE_OFFER_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long offerId = 33502824L;
@@ -197,7 +198,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseUserWithoutGoldenKey() throws Exception {
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_USER_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(PARSE_USER_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long userId = 2L;
@@ -230,7 +232,8 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseUserWithGoldenKey() throws Exception {
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_USER_HTML_RESPONSE_PATH)));
+        String htmlContent =
+                new String(Files.readAllBytes(Paths.get(PARSE_USER_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         String goldenKey = "some_golden_key";
@@ -265,7 +268,7 @@ class JsoupFunPayParserTest {
     @Test
     void testParseSellerReviews() throws Exception {
         String htmlContent =
-                new String(Files.readAllBytes(Paths.get(GET_SELLER_REVIEWS_HTML_RESPONSE_PATH)));
+                new String(Files.readAllBytes(Paths.get(PARSE_SELLER_REVIEWS_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long userId = 2L;
@@ -303,7 +306,7 @@ class JsoupFunPayParserTest {
     @Test
     void testParseTransactions() throws Exception {
         String htmlContent =
-                new String(Files.readAllBytes(Paths.get(GET_TRANSACTIONS_HTML_RESPONSE_PATH)));
+                new String(Files.readAllBytes(Paths.get(PARSE_TRANSACTIONS_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         String goldenKey = "test-golden-key";
@@ -339,7 +342,7 @@ class JsoupFunPayParserTest {
     @Test
     void testParseOrder() throws Exception {
         String htmlContent =
-                new String(Files.readAllBytes(Paths.get(GET_ORDER_HTML_RESPONSE_PATH)));
+                new String(Files.readAllBytes(Paths.get(PARSE_ORDER_HTML_RESPONSE_PATH)));
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         String goldenKey = "some_golden_key";
