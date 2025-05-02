@@ -503,8 +503,9 @@ public class JsoupFunPayParser implements FunPayParser {
                     funPayDocument.getElementsByClass("page-content").first().children();
 
             Element pageHeader = pageContentChildren.get(0);
-            for (Element statusElement : pageHeader.children()) {
-                statuses.add(statusElement.text());
+            // skip empty status
+            for (int i = 1; i < pageHeader.childrenSize(); i++) {
+                statuses.add(pageHeader.children().get(i).text());
             }
 
             Element paramList = pageContentChildren.get(1);
