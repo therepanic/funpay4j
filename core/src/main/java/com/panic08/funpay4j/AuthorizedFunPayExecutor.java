@@ -72,10 +72,12 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * Creates a new AuthorizedFunPayExecutor instance
      *
      * @param goldenKey golden key which will be used to authorize the user
+     * @param baseURL base URL of the primary server
+     * @param proxy proxy for forwarding requests
      */
-    public AuthorizedFunPayExecutor(@NonNull String goldenKey) {
-        super();
-
+    public AuthorizedFunPayExecutor(
+            @NonNull String goldenKey, @NonNull String baseURL, Proxy proxy) {
+        super(baseURL, proxy);
         this.goldenKey = goldenKey;
     }
 
@@ -83,14 +85,9 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * Creates a new AuthorizedFunPayExecutor instance
      *
      * @param goldenKey golden key which will be used to authorize the user
-     * @param baseURL base URL of the primary server
-     * @param proxy proxy for forwarding requests
      */
-    public AuthorizedFunPayExecutor(
-            @NonNull String goldenKey, @NonNull String baseURL, @NonNull Proxy proxy) {
-        super(baseURL, proxy);
-
-        this.goldenKey = goldenKey;
+    public AuthorizedFunPayExecutor(@NonNull String goldenKey) {
+        this(goldenKey, FunPayURL.BASE_URL, null);
     }
 
     /**
@@ -100,9 +97,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @param baseURL base URL of the primary server
      */
     public AuthorizedFunPayExecutor(@NonNull String goldenKey, @NonNull String baseURL) {
-        super(baseURL);
-
-        this.goldenKey = goldenKey;
+        this(goldenKey, baseURL, null);
     }
 
     /**
@@ -112,9 +107,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @param proxy proxy for forwarding requests
      */
     public AuthorizedFunPayExecutor(@NonNull String goldenKey, @NonNull Proxy proxy) {
-        super(proxy);
-
-        this.goldenKey = goldenKey;
+        this(goldenKey, FunPayURL.BASE_URL, proxy);
     }
 
     /**
