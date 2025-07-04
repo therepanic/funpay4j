@@ -1,9 +1,9 @@
 ![FunPay4j Logo](./funpay4j.jpg)
 
-[![CI](https://github.com/panic08/funpay4j/actions/workflows/build.yml/badge.svg)](https://github.com/panic08/funpay4j/actions/workflows/build.yml)
-[![GitHub release](https://img.shields.io/github/v/release/panic08/funpay4j)](https://github.com/panic08/funpay4j/releases)
-[![JitPack](https://jitpack.io/v/panic08/funpay4j.svg)](https://jitpack.io/#panic08/funpay4j)
-[![Apache License](http://img.shields.io/badge/license-ASL-blue.svg)](https://github.com/panic08/funpay4j/blob/master/COPYING)
+[![CI](https://github.com/therepanic/funpay4j/actions/workflows/build.yml/badge.svg)](https://github.com/therepanic/funpay4j/actions/workflows/build.yml)
+[![GitHub release](https://img.shields.io/github/v/release/therepanic/funpay4j)](https://github.com/therepanic/funpay4j/releases)
+[![JitPack](https://jitpack.io/v/therepanic/funpay4j.svg)](https://jitpack.io/#therepanic/funpay4j)
+[![Apache License](http://img.shields.io/badge/license-ASL-blue.svg)](https://github.com/therepanic/funpay4j/blob/master/COPYING)
 
 ---
 
@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.panic08.funpay4j:core:1.0.6'
+    implementation 'com.github.therepanic.funpay4j:core:1.0.6'
 }
 ```
 
@@ -47,7 +47,7 @@ dependencies {
 
 <dependencies>
 <dependency>
-    <groupId>com.github.panic08.funpay4j</groupId>
+    <groupId>com.github.therepanic.funpay4j</groupId>
     <artifactId>core</artifactId>
     <version>1.0.6</version>
 </dependency>
