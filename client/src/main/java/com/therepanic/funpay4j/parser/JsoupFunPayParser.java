@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import lombok.NonNull;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -33,6 +32,7 @@ import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jspecify.annotations.Nullable;
 
 import com.google.gson.JsonParser;
 import com.therepanic.funpay4j.FunPayUserUtil;
@@ -67,9 +67,9 @@ import com.therepanic.funpay4j.objects.user.ParsedUser;
  * @since 1.0.0
  */
 public class JsoupFunPayParser implements FunPayParser {
-    @NonNull private final OkHttpClient httpClient;
+    private final OkHttpClient httpClient;
 
-    @NonNull private final String baseURL;
+    private final String baseURL;
 
     /**
      * Creates a new JsoupFunPayParser instance
@@ -77,7 +77,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * @param httpClient httpClient required to send http requests
      * @param baseURL base URL of the primary server
      */
-    public JsoupFunPayParser(@NonNull OkHttpClient httpClient, @NonNull String baseURL) {
+    public JsoupFunPayParser(OkHttpClient httpClient, String baseURL) {
         this.httpClient = httpClient;
         this.baseURL = baseURL;
     }
@@ -232,7 +232,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
     /** {@inheritDoc} */
     @Override
-    public List<ParsedPromoGame> parsePromoGames(@NonNull String query) throws FunPayApiException {
+    public List<ParsedPromoGame> parsePromoGames(String query) throws FunPayApiException {
         List<ParsedPromoGame> currentPromoGames = new ArrayList<>();
 
         RequestBody requestBody =
@@ -563,7 +563,7 @@ public class JsoupFunPayParser implements FunPayParser {
 
     /** {@inheritDoc} */
     @Override
-    public CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(@NonNull String goldenKey)
+    public CsrfTokenAndPHPSESSID parseCsrfTokenAndPHPSESSID(String goldenKey)
             throws FunPayApiException {
         // We send a request to /unknown URL that doesn't exist to get a page where it will be
         // reported that the page doesn't exist.
@@ -612,7 +612,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * @throws FunPayApiException if the other api-related exception
      * @throws UserNotFoundException if the user with id does not found
      */
-    private ParsedUser parseUserInternal(String goldenKey, long userId)
+    private ParsedUser parseUserInternal(@Nullable String goldenKey, long userId)
             throws FunPayApiException, UserNotFoundException {
         Request.Builder newCallBuilder =
                 new Request.Builder().get().url(baseURL + "/users/" + userId + "/");
@@ -795,7 +795,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     private List<ParsedTransaction> parseTransactionsInternal(
-            String goldenKey, long userId, ParsedTransactionType type, int pages)
+            String goldenKey, long userId, @Nullable ParsedTransactionType type, int pages)
             throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException {
         List<ParsedTransaction> parsedTransactions = new ArrayList<>();
 
@@ -927,7 +927,7 @@ public class JsoupFunPayParser implements FunPayParser {
      * @throws UserNotFoundException if the user with id does not found/seller
      */
     private List<ParsedSellerReview> parseSellerReviewsInternal(
-            String goldenKey, long userId, int pages, String starsFilter)
+            @Nullable String goldenKey, long userId, int pages, @Nullable String starsFilter)
             throws FunPayApiException, UserNotFoundException {
         List<ParsedSellerReview> currentSellerReviews = new ArrayList<>();
 

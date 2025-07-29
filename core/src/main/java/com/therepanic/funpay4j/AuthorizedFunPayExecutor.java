@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
+
+import org.jspecify.annotations.Nullable;
 
 import com.therepanic.funpay4j.commands.offer.CreateOffer;
 import com.therepanic.funpay4j.commands.offer.CreateOfferImage;
@@ -64,9 +65,9 @@ import com.therepanic.funpay4j.request.SaveOfferRequest;
 public class AuthorizedFunPayExecutor extends FunPayExecutor {
     private final String goldenKey;
 
-    private String PHPSESSID;
+    @Nullable private String PHPSESSID;
 
-    private String csrfToken;
+    @Nullable private String csrfToken;
 
     /**
      * Creates a new AuthorizedFunPayExecutor instance
@@ -75,8 +76,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @param baseURL base URL of the primary server
      * @param proxy proxy for forwarding requests
      */
-    public AuthorizedFunPayExecutor(
-            @NonNull String goldenKey, @NonNull String baseURL, Proxy proxy) {
+    public AuthorizedFunPayExecutor(String goldenKey, String baseURL, @Nullable Proxy proxy) {
         super(baseURL, proxy);
         this.goldenKey = goldenKey;
     }
@@ -86,7 +86,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      *
      * @param goldenKey golden key which will be used to authorize the user
      */
-    public AuthorizedFunPayExecutor(@NonNull String goldenKey) {
+    public AuthorizedFunPayExecutor(String goldenKey) {
         this(goldenKey, FunPayURL.BASE_URL, null);
     }
 
@@ -96,7 +96,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @param goldenKey golden key which will be used to authorize the user
      * @param baseURL base URL of the primary server
      */
-    public AuthorizedFunPayExecutor(@NonNull String goldenKey, @NonNull String baseURL) {
+    public AuthorizedFunPayExecutor(String goldenKey, String baseURL) {
         this(goldenKey, baseURL, null);
     }
 
@@ -106,7 +106,7 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      * @param goldenKey golden key which will be used to authorize the user
      * @param proxy proxy for forwarding requests
      */
-    public AuthorizedFunPayExecutor(@NonNull String goldenKey, @NonNull Proxy proxy) {
+    public AuthorizedFunPayExecutor(String goldenKey, Proxy proxy) {
         this(goldenKey, FunPayURL.BASE_URL, proxy);
     }
 
@@ -438,8 +438,8 @@ public class AuthorizedFunPayExecutor extends FunPayExecutor {
      */
     public void updateCsrfTokenAndPHPSESSID() throws FunPayApiException {
         // TODO: It might be worth reconsidering and finding another way to update csrf and
-        // PHPSESSID
-        // that doesn't require making such relatively expensive queries
+        //  PHPSESSID
+        //  that doesn't require making such relatively expensive queries
 
         CsrfTokenAndPHPSESSID csrfTokenAndPHPSESSID =
                 funPayParser.parseCsrfTokenAndPHPSESSID(goldenKey);

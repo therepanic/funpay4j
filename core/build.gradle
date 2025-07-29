@@ -5,6 +5,7 @@ plugins {
 dependencies {
     api project(":client")
     implementation libs.okhttp
+    compileOnly libs.jspecify
     testImplementation libs.mockwebserver
     annotationProcessor libs.lombok
     testImplementation platform(libs.junitBom)
@@ -21,12 +22,6 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(8)
     }
-}
-
-tasks.withType(Javadoc).configureEach {
-    failOnError = true
-    options.addStringOption('Xdoclint:all', '-quiet')
-    options.addBooleanOption('Xwerror', true)
 }
 
 tasks.named("build") {

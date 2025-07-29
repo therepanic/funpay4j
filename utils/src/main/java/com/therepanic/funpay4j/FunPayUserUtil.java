@@ -34,8 +34,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import lombok.NonNull;
-
 /**
  * Util for working with FunPay users
  *
@@ -51,8 +49,7 @@ public class FunPayUserUtil {
      * @return {@link Date} object representing the user's registration date
      * @throws ParseException parsing exception
      */
-    public static Date convertRegisterDateStringToDate(@NonNull String registerDate)
-            throws ParseException {
+    public static Date convertRegisterDateStringToDate(String registerDate) throws ParseException {
         if (registerDate.startsWith("сегодня")) {
             Calendar calendar = Calendar.getInstance();
 
@@ -113,8 +110,7 @@ public class FunPayUserUtil {
 
                 return calendar.getTime();
             }
-
-            return null;
+            throw new IllegalArgumentException("Unrecognized date format: " + registerDate);
         }
     }
 
@@ -125,8 +121,7 @@ public class FunPayUserUtil {
      * @return {@link Date} object representing the user's last seen date
      * @throws ParseException parsing exception
      */
-    public static Date convertLastSeenAtStringToDate(@NonNull String lastSeenAt)
-            throws ParseException {
+    public static Date convertLastSeenAtStringToDate(String lastSeenAt) throws ParseException {
         // delete the “(X days/weeks/years ago)” part
         lastSeenAt = lastSeenAt.replaceFirst("\\(.*\\)", "").trim();
 
@@ -188,8 +183,7 @@ public class FunPayUserUtil {
 
             return calendar.getTime();
         }
-
-        return null;
+        throw new IllegalArgumentException("Unrecognized date format: " + lastSeenAt);
     }
 
     /**
@@ -200,7 +194,7 @@ public class FunPayUserUtil {
      * @return {@link Date} object representing the parsed date and time
      * @throws ParseException parsing exception
      */
-    public static Date convertAdvancedSellerReviewCreatedAtToDate(@NonNull String createdAt)
+    public static Date convertAdvancedSellerReviewCreatedAtToDate(String createdAt)
             throws ParseException {
         if (createdAt.startsWith("сегодня")) {
             Calendar calendar = Calendar.getInstance();
@@ -263,8 +257,7 @@ public class FunPayUserUtil {
 
                 return calendar.getTime();
             }
-
-            return null;
+            throw new IllegalArgumentException("Unrecognized date format: " + createdAt);
         }
     }
 }

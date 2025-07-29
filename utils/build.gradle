@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    compileOnly libs.jspecify
     annotationProcessor libs.lombok
     testImplementation platform(libs.junitBom)
     testImplementation libs.junit
@@ -18,12 +19,6 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(8)
     }
-}
-
-tasks.withType(Javadoc).configureEach {
-    failOnError = true
-    options.addStringOption('Xdoclint:all', '-quiet')
-    options.addBooleanOption('Xwerror', true)
 }
 
 tasks.named("build") {

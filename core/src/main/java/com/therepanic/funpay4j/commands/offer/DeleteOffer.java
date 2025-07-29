@@ -17,7 +17,6 @@ package com.therepanic.funpay4j.commands.offer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -31,7 +30,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class DeleteOffer {
-    @NonNull private Long lotId;
+    private Long lotId;
 
-    @NonNull private Long offerId;
+    private Long offerId;
 }

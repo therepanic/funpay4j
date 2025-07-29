@@ -17,7 +17,6 @@ package com.therepanic.funpay4j.commands.user;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -31,5 +30,5 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class UpdateAvatar {
-    private byte @NonNull [] newAvatar;
+    private byte[] newAvatar;
 }

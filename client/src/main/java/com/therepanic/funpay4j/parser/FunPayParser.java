@@ -16,6 +16,8 @@ package com.therepanic.funpay4j.parser;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import com.therepanic.funpay4j.exceptions.FunPayApiException;
 import com.therepanic.funpay4j.exceptions.InvalidGoldenKeyException;
 import com.therepanic.funpay4j.exceptions.lot.LotNotFoundException;
@@ -158,7 +160,7 @@ public interface FunPayParser {
      * @throws InvalidGoldenKeyException if the golden key is incorrect
      */
     List<ParsedTransaction> parseTransactions(
-            String goldenKey, long userId, ParsedTransactionType type, int pages)
+            String goldenKey, long userId, @Nullable ParsedTransactionType type, int pages)
             throws FunPayApiException, UserNotFoundException, InvalidGoldenKeyException;
 
     /**
