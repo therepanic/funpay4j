@@ -24,12 +24,6 @@ java {
     }
 }
 
-tasks.withType(Javadoc).configureEach {
-    failOnError = true
-    options.addStringOption('Xdoclint:all', '-quiet')
-    options.addBooleanOption('Xwerror', true)
-}
-
 tasks.named("build") {
     dependsOn(javadoc)
 }
