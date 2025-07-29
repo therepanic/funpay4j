@@ -5,6 +5,7 @@ gson = "2.13.1"
 lombok = "1.18.38"
 junit = "5.9.1"
 spotless = "5.17.0"
+jspecify = "1.0.0"
 
 [libraries]
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
@@ -14,6 +15,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 
 [plugins]
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

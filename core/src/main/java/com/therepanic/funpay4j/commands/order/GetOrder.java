@@ -17,7 +17,6 @@ package com.therepanic.funpay4j.commands.order;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -32,5 +31,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetOrder {
 
-    @NonNull private String orderId;
+    private String orderId;
 }

@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation project(":utils")
     implementation libs.okhttp
+    compileOnly libs.jspecify
     testImplementation libs.mockwebserver
     implementation libs.gson
     implementation libs.jsoup

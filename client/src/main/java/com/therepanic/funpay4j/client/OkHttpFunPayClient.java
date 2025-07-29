@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.NonNull;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -40,9 +39,9 @@ import com.therepanic.funpay4j.request.SaveOfferRequest;
  * @since 1.0.3
  */
 public class OkHttpFunPayClient implements FunPayClient {
-    @NonNull private final OkHttpClient httpClient;
+    private final OkHttpClient httpClient;
 
-    @NonNull private final String baseURL;
+    private final String baseURL;
 
     /**
      * Creates a new OkHttpFunPayClient instance
@@ -50,14 +49,14 @@ public class OkHttpFunPayClient implements FunPayClient {
      * @param httpClient httpClient required to send http requests
      * @param baseURL base URL of the primary server
      */
-    public OkHttpFunPayClient(@NonNull OkHttpClient httpClient, @NonNull String baseURL) {
+    public OkHttpFunPayClient(OkHttpClient httpClient, String baseURL) {
         this.httpClient = httpClient;
         this.baseURL = baseURL;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void updateAvatar(@NonNull String goldenKey, byte @NonNull [] newAvatar)
+    public void updateAvatar(String goldenKey, byte[] newAvatar)
             throws FunPayApiException, InvalidGoldenKeyException {
         RequestBody requestBody =
                 new MultipartBody.Builder()
@@ -85,7 +84,7 @@ public class OkHttpFunPayClient implements FunPayClient {
 
     /** {@inheritDoc} */
     @Override
-    public void raiseAllOffers(@NonNull String goldenKey, long gameId, long lotId)
+    public void raiseAllOffers(String goldenKey, long gameId, long lotId)
             throws FunPayApiException, InvalidGoldenKeyException, OfferAlreadyRaisedException {
         RequestBody requestBody =
                 new MultipartBody.Builder()
@@ -123,10 +122,7 @@ public class OkHttpFunPayClient implements FunPayClient {
     /** {@inheritDoc} */
     @Override
     public void saveOffer(
-            @NonNull String goldenKey,
-            @NonNull String csrfToken,
-            @NonNull String phpSessionId,
-            @NonNull SaveOfferRequest request)
+            String goldenKey, String csrfToken, String phpSessionId, SaveOfferRequest request)
             throws FunPayApiException, InvalidGoldenKeyException {
         MultipartBody.Builder multipartBody =
                 new MultipartBody.Builder()
@@ -249,7 +245,7 @@ public class OkHttpFunPayClient implements FunPayClient {
 
     /** {@inheritDoc} */
     @Override
-    public Long addOfferImage(@NonNull String goldenKey, byte @NonNull [] image)
+    public Long addOfferImage(String goldenKey, byte[] image)
             throws FunPayApiException, InvalidGoldenKeyException {
         RequestBody requestBody =
                 new MultipartBody.Builder()

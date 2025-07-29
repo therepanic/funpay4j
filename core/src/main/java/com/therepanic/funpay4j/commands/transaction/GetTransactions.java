@@ -17,10 +17,9 @@ package com.therepanic.funpay4j.commands.transaction;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.therepanic.funpay4j.objects.transaction.TransactionType;
 
@@ -35,9 +34,9 @@ import com.therepanic.funpay4j.objects.transaction.TransactionType;
 @Builder
 @AllArgsConstructor
 public class GetTransactions {
-    @NonNull private Long userId;
+    private Long userId;
 
     @Nullable private TransactionType type;
 
-    @NonNull private Integer pages;
+    private Integer pages;
 }

@@ -12,31 +12,5 @@
  * limitations under the License.
  */
 
-package com.therepanic.funpay4j.objects.user;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
-import org.jspecify.annotations.Nullable;
-
-/**
- * This object represents the FunPay preview user
- *
- * @author therepanic
- * @since 1.0.0
- */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
-public class PreviewUser {
-    private long userId;
-
-    private String username;
-
-    @Nullable private String avatarPhotoLink;
-
-    private boolean isOnline;
-}
+@org.jspecify.annotations.NullMarked
+package com.therepanic.funpay4j.client;

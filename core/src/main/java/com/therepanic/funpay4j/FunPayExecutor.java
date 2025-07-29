@@ -18,8 +18,9 @@ import java.net.Proxy;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.NonNull;
 import okhttp3.OkHttpClient;
+
+import org.jspecify.annotations.Nullable;
 
 import com.therepanic.funpay4j.client.FunPayClient;
 import com.therepanic.funpay4j.client.OkHttpFunPayClient;
@@ -57,9 +58,9 @@ import com.therepanic.funpay4j.parser.JsoupFunPayParser;
  * @since 1.0.0
  */
 public class FunPayExecutor {
-    @NonNull protected final FunPayParser funPayParser;
+    protected final FunPayParser funPayParser;
 
-    @NonNull protected final FunPayClient funPayClient;
+    protected final FunPayClient funPayClient;
 
     /**
      * Creates a new FunPayExecutor instance
@@ -67,7 +68,7 @@ public class FunPayExecutor {
      * @param baseURL base URL of the primary server
      * @param proxy proxy for forwarding requests
      */
-    public FunPayExecutor(@NonNull String baseURL, Proxy proxy) {
+    public FunPayExecutor(String baseURL, @Nullable Proxy proxy) {
         OkHttpClient httpClient;
 
         if (proxy == null) {
@@ -90,7 +91,7 @@ public class FunPayExecutor {
      *
      * @param baseURL base URL of the primary server
      */
-    public FunPayExecutor(@NonNull String baseURL) {
+    public FunPayExecutor(String baseURL) {
         this(baseURL, null);
     }
 
@@ -99,7 +100,7 @@ public class FunPayExecutor {
      *
      * @param proxy proxy for forwarding requests
      */
-    public FunPayExecutor(@NonNull Proxy proxy) {
+    public FunPayExecutor(Proxy proxy) {
         this(FunPayURL.BASE_URL, proxy);
     }
 

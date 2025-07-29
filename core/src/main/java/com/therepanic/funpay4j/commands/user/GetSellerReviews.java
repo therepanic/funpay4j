@@ -17,10 +17,9 @@ package com.therepanic.funpay4j.commands.user;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Use this command to get seller reviews
@@ -33,9 +32,9 @@ import org.jetbrains.annotations.Nullable;
 @Builder
 @AllArgsConstructor
 public class GetSellerReviews {
-    @NonNull private Long userId;
+    private Long userId;
 
-    @NonNull private Integer pages;
+    private Integer pages;
 
     @Nullable private Integer starsFilter;
 }

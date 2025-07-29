@@ -20,10 +20,9 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Use this command to edit offer
@@ -36,13 +35,13 @@ import org.jetbrains.annotations.Nullable;
 @Builder
 @AllArgsConstructor
 public class EditOffer {
-    @NonNull private Long lotId;
+    private Long lotId;
 
-    @NonNull private Long offerId;
+    private Long offerId;
 
     @Nullable private String shortDescriptionRu;
 
-    @NonNull private String shortDescriptionEn;
+    private String shortDescriptionEn;
 
     @Nullable private String descriptionRu;
 
@@ -62,7 +61,7 @@ public class EditOffer {
 
     @Nullable private List<Long> imageIds;
 
-    @NonNull private Double price;
+    private Double price;
 
-    @NonNull private Integer amount;
+    private Integer amount;
 }

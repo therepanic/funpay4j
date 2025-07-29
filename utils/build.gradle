@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    compileOnly libs.jspecify
     annotationProcessor libs.lombok
     testImplementation platform(libs.junitBom)
     testImplementation libs.junit
