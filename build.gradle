@@ -4,8 +4,8 @@ plugins {
 
 
 allprojects {
-    group = 'ru.funpay4j'
-    version = '1.0.7'
+    group = 'com.therepanic.funpay4j'
+    version = '1.0.7-SNAPSHOT'
 
     repositories {
         mavenCentral()
