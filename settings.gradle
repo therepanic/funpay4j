@@ -25,4 +25,7 @@ project(":utils").name = 'utils'
 include 'examples'
 project(":examples").name = 'examples'
 
+include 'test-resources'
+project(":test-resources").name = 'test-resources'
+
 

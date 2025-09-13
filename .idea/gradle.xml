@@ -24,6 +24,7 @@
             <option value="$PROJECT_DIR$/client" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/examples" />
+            <option value="$PROJECT_DIR$/test-resources" />
             <option value="$PROJECT_DIR$/utils" />
           </set>
         </option>

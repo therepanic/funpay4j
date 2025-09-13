@@ -12,6 +12,7 @@ dependencies {
     annotationProcessor libs.lombok
     testImplementation platform(libs.junitBom)
     testImplementation libs.junit
+    testImplementation project(path: ":test-resources", configuration: "testArtifacts")
 }
 
 configurations {
