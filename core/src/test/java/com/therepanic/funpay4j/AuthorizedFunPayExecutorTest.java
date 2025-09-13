@@ -20,8 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,11 +58,10 @@ class AuthorizedFunPayExecutorTest {
     private MockWebServer mockWebServer;
 
     private static final String GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getCsrfTokenAndPHPSESSIDResponse.html";
+            "html/client/getCsrfTokenAndPHPSESSIDResponse.html";
     private static final String GET_TRANSACTIONS_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getTransactionsResponse.html";
-    private static final String GET_ORDER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getOrderResponse.html";
+            "html/client/getTransactionsResponse.html";
+    private static final String GET_ORDER_HTML_RESPONSE_PATH = "html/client/getOrderResponse.html";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -80,10 +82,7 @@ class AuthorizedFunPayExecutorTest {
         String oldCsrfToken = funPayExecutor.getCsrfToken();
         String oldPHPSESSID = funPayExecutor.getPHPSESSID();
 
-        String htmlContent =
-                new String(
-                        Files.readAllBytes(
-                                Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(
                 new MockResponse()
@@ -144,10 +143,7 @@ class AuthorizedFunPayExecutorTest {
                         .setBody(
                                 "{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}"));
 
-        String htmlContent =
-                new String(
-                        Files.readAllBytes(
-                                Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(
                 new MockResponse()
@@ -187,10 +183,7 @@ class AuthorizedFunPayExecutorTest {
                         .setBody(
                                 "{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}"));
 
-        String htmlContent =
-                new String(
-                        Files.readAllBytes(
-                                Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(
                 new MockResponse()
@@ -227,10 +220,7 @@ class AuthorizedFunPayExecutorTest {
                         .setBody(
                                 "{\"msg\": \"Обновите страницу и повторите попытку.\", \"error\": 1}"));
 
-        String htmlContent =
-                new String(
-                        Files.readAllBytes(
-                                Paths.get(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_CSRF_TOKEN_AND_PHPSESSID_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(
                 new MockResponse()
@@ -272,8 +262,7 @@ class AuthorizedFunPayExecutorTest {
 
     @Test
     void testGetTransactions() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(GET_TRANSACTIONS_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_TRANSACTIONS_HTML_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long userId = 123L;
@@ -298,8 +287,7 @@ class AuthorizedFunPayExecutorTest {
     void testGetOrder() throws Exception {
         String orderId = "GFHMZY4Z";
 
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(GET_ORDER_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_ORDER_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(
                 new MockResponse()
@@ -318,5 +306,23 @@ class AuthorizedFunPayExecutorTest {
         assertEquals(90.0, order.getPrice());
         assertNotNull(order.getParams());
         assertNotNull(order.getOther());
+    }
+
+    private static String readResource(String resourcePath) throws IOException {
+        try (InputStream is =
+                AuthorizedFunPayExecutorTest.class
+                        .getClassLoader()
+                        .getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new FileNotFoundException("Resource not found: " + resourcePath);
+            }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[4096];
+            int nRead;
+            while ((nRead = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+        }
     }
 }

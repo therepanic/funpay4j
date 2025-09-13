@@ -21,9 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -63,20 +65,18 @@ class JsoupFunPayParserTest {
     private MockWebServer mockWebServer;
     private JsoupFunPayParser parser;
 
-    private static final String PARSE_LOT_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/parseLotResponse.html";
+    private static final String PARSE_LOT_HTML_RESPONSE_PATH = "html/client/getLotResponse.html";
     private static final String PARSE_PROMO_GAMES_JSON_RESPONSE_PATH =
-            "src/test/resources/json/client/parsePromoGamesResponse.json";
+            "json/client/getPromoGamesResponse.json";
     private static final String PARSE_OFFER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/parseOfferResponse.html";
-    private static final String PARSE_USER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/parseUserResponse.html";
+            "html/client/getOfferResponse.html";
+    private static final String PARSE_USER_HTML_RESPONSE_PATH = "html/client/getUserResponse.html";
     private static final String PARSE_SELLER_REVIEWS_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/parseSellerReviewsResponse.html";
+            "html/client/getSellerReviewsResponse.html";
     private static final String PARSE_TRANSACTIONS_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/parseTransactionsResponse.html";
+            "html/client/getTransactionsResponse.html";
     private static final String PARSE_ORDER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/parseOrderResponse.html";
+            "html/client/getOrderResponse.html";
     private static final String BASE_URL = "/";
 
     @BeforeEach
@@ -95,8 +95,7 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseLot() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(PARSE_LOT_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(PARSE_LOT_HTML_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long lotId = 149L;
@@ -136,8 +135,7 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParsePromoGames() throws Exception {
-        String jsonContent =
-                new String(Files.readAllBytes(Paths.get(PARSE_PROMO_GAMES_JSON_RESPONSE_PATH)));
+        String jsonContent = readResource(PARSE_PROMO_GAMES_JSON_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(jsonContent).setResponseCode(200));
 
         String query = "dota";
@@ -158,8 +156,7 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseOffer() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(PARSE_OFFER_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(PARSE_OFFER_HTML_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long offerId = 33502824L;
@@ -198,8 +195,7 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseUserWithoutGoldenKey() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(PARSE_USER_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(PARSE_USER_HTML_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long userId = 2L;
@@ -232,8 +228,7 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseUserWithGoldenKey() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(PARSE_USER_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(PARSE_USER_HTML_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         String goldenKey = "some_golden_key";
@@ -267,8 +262,7 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseSellerReviews() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(PARSE_SELLER_REVIEWS_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(PARSE_SELLER_REVIEWS_HTML_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         long userId = 2L;
@@ -305,8 +299,7 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseTransactions() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(PARSE_TRANSACTIONS_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(PARSE_TRANSACTIONS_HTML_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         String goldenKey = "test-golden-key";
@@ -341,8 +334,7 @@ class JsoupFunPayParserTest {
 
     @Test
     void testParseOrder() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(PARSE_ORDER_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(PARSE_ORDER_HTML_RESPONSE_PATH);
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
         String goldenKey = "some_golden_key";
@@ -399,5 +391,21 @@ class JsoupFunPayParserTest {
         assertNotNull(result);
         assertEquals(csrfToken, result.getCsrfToken());
         assertEquals(phpSessId, result.getPHPSESSID());
+    }
+
+    private static String readResource(String resourcePath) throws IOException {
+        try (InputStream is =
+                JsoupFunPayParser.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new FileNotFoundException("Resource not found: " + resourcePath);
+            }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[4096];
+            int nRead;
+            while ((nRead = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+        }
     }
 }

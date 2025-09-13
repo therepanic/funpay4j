@@ -20,8 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -52,16 +55,13 @@ class FunPayExecutorTest {
 
     private MockWebServer mockWebServer;
 
-    private static final String GET_USER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getUserResponse.html";
-    private static final String GET_LOT_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getLotResponse.html";
-    private static final String GET_OFFER_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getOfferResponse.html";
+    private static final String GET_USER_HTML_RESPONSE_PATH = "html/client/getUserResponse.html";
+    private static final String GET_LOT_HTML_RESPONSE_PATH = "html/client/getLotResponse.html";
+    private static final String GET_OFFER_HTML_RESPONSE_PATH = "html/client/getOfferResponse.html";
     private static final String GET_SELLER_REVIEWS_HTML_RESPONSE_PATH =
-            "src/test/resources/html/client/getSellerReviewsResponse.html";
+            "html/client/getSellerReviewsResponse.html";
     private static final String GET_PROMO_GAMES_JSON_RESPONSE_PATH =
-            "src/test/resources/json/client/getPromoGamesResponse.json";
+            "json/client/getPromoGamesResponse.json";
 
     @BeforeEach
     void setUp() {
@@ -76,7 +76,7 @@ class FunPayExecutorTest {
 
     @Test
     void testGetLot() throws Exception {
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_LOT_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_LOT_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
@@ -90,8 +90,7 @@ class FunPayExecutorTest {
 
     @Test
     void testGetPromoGames() throws Exception {
-        String jsonContent =
-                new String(Files.readAllBytes(Paths.get(GET_PROMO_GAMES_JSON_RESPONSE_PATH)));
+        String jsonContent = readResource(GET_PROMO_GAMES_JSON_RESPONSE_PATH);
 
         mockWebServer.enqueue(new MockResponse().setBody(jsonContent).setResponseCode(200));
 
@@ -105,8 +104,7 @@ class FunPayExecutorTest {
 
     @Test
     void testGetOffer() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(GET_OFFER_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_OFFER_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
@@ -122,7 +120,7 @@ class FunPayExecutorTest {
 
     @Test
     void testGetUser() throws Exception {
-        String htmlContent = new String(Files.readAllBytes(Paths.get(GET_USER_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_USER_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
@@ -138,8 +136,7 @@ class FunPayExecutorTest {
 
     @Test
     void testGetSellerReviews() throws Exception {
-        String htmlContent =
-                new String(Files.readAllBytes(Paths.get(GET_SELLER_REVIEWS_HTML_RESPONSE_PATH)));
+        String htmlContent = readResource(GET_SELLER_REVIEWS_HTML_RESPONSE_PATH);
 
         mockWebServer.enqueue(new MockResponse().setBody(htmlContent).setResponseCode(200));
 
@@ -162,5 +159,21 @@ class FunPayExecutorTest {
         assertTrue(
                 secondSellerReview.getSellerReplyText() != null
                         && !secondSellerReview.getSellerReplyText().isEmpty());
+    }
+
+    private static String readResource(String resourcePath) throws IOException {
+        try (InputStream is =
+                FunPayExecutorTest.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new FileNotFoundException("Resource not found: " + resourcePath);
+            }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[4096];
+            int nRead;
+            while ((nRead = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+        }
     }
 }
